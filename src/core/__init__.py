@@ -10,6 +10,7 @@ from .theme_manager import get_theme_manager, ThemeManager, Theme, ThemeMode, Co
 from .animation import get_animation_manager, animate, animate_to, fade_in, fade_out, spring_to, EasingFunction, AnimationConfig
 from .distributed import get_device_mesh_manager, DeviceMeshManager, DeviceMesh, NodeInfo, LogEntry, RaftConsensus, CRDT, GCounter, PNCounter, LWWRegister, ORSet
 from .ml_system import get_ml_system, MLSystem, InferenceEngine, ModelCompiler, AutoMLController, FederatedLearningCoordinator, HardwareTarget, QuantizationType, ModelFormat, TensorSpec, ModelMetadata, MLIRModule, CompiledModule
+from .security import CapabilityManager, Capability, CapabilityBounds, CapabilityTable, SecurityDomain, SecurityPolicy, CapabilityRight, ObjectType, SecurityError, VerificationAnnotations
 
 __all__ = [
     "OmniOSEngine", "ModeManager", "Mode",
@@ -23,4 +24,5 @@ __all__ = [
     "get_animation_manager", "animate", "animate_to", "fade_in", "fade_out", "spring_to", "EasingFunction", "AnimationConfig",
     "get_device_mesh_manager", "DeviceMeshManager", "DeviceMesh", "NodeInfo", "LogEntry", "RaftConsensus", "CRDT", "GCounter", "PNCounter", "LWWRegister", "ORSet",
     "get_ml_system", "MLSystem", "InferenceEngine", "ModelCompiler", "AutoMLController", "FederatedLearningCoordinator", "HardwareTarget", "QuantizationType", "ModelFormat", "TensorSpec", "ModelMetadata", "MLIRModule", "CompiledModule",
+    "CapabilityManager", "Capability", "CapabilityBounds", "CapabilityTable", "SecurityDomain", "SecurityPolicy", "CapabilityRight", "ObjectType", "SecurityError", "VerificationAnnotations",
 ]
