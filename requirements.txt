@@ -1,0 +1,3 @@
+# OmniOS Prototype Requirements
+# Tkinter is included with Python by default
+# No additional dependencies required for the prototype

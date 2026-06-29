@@ -1,0 +1,235 @@
+# OmniOS UI Spesifikasyonları
+
+## 1. Normal Mod UI Spesifikasyonu
+
+### 1.1 Ana Ekran (Home Screen)
+
+```
+┌──────────────────────────┐
+│  ○ 12:00   ● ☁ ⚡    │ ← Status Bar (30px)
+├──────────────────────────┤
+│                          │
+│  ┌────┐ ┌────┐ ┌────┐  │
+│  │ 📞 │ │ 🌐 │ │ ✉  │  │ ← App Grid (4 sütun)
+│  │Phone│ │Web  │ │Mail │  │
+│  └────┘ └────┘ └────┘  │
+│  ┌────┐ ┌────┐ ┌────┐  │
+│  │ 📷 │ │ 🎵 │ │ ⚙  │  │
+│  │Cam  │ │Music│ │Set. │  │
+│  └────┘ └────┘ └────┘  │
+│  ┌────┐ ┌────┐ ┌────┐  │
+│  │ 📱 │ │ 💬 │ │ 🔒  │  │
+│  │iOS  │ │Mesaj│ │Kilit │  │
+│  └────┘ └────┘ └────┘  │
+│                          │
+│  [Dock: ⎯ ⎯ ⎯ ⎯ ⎯ ⎯]   │ ← Dock (favori uyg.)
+│                          │
+├──────────────────────────┤
+│  ← ○ →   ◉Flow  ◁    │ ← Navigation Bar (50px)
+└──────────────────────────┘
+```
+
+**Temel Bileşenler:**
+
+| Bileşen | Açıklama | Boyut |
+|---------|----------|-------|
+| Status Bar | Zaman, sinyal, pil | 30px (h:30) |
+| App Grid | Uygulama ikonları | 4 sütun, esnek satır |
+| App Icon | İkon + isim | 60x80px |
+| Dock | Favori uygulamalar | 4-5 ikon |
+| Navigation Bar | Navigasyon + mod | 50px (h:50) |
+
+### 1.2 App Drawer
+
+```
+┌──────────────────────────┐
+│ 🔍 Ara...            │ ← Search Bar
+├──────────────────────────┤
+│ 📱 Tümü │ Android │ iOS  │ ← Platform Filter
+├──────────────────────────┤
+│                          │
+│  ┌────┐ ┌────┐ ┌────┐  │
+│  │ 📞 │ │ 🌐 │ │ ✉  │  │ ← Filtered App Grid
+│  │Phone│ │Web  │ │Mail │  │
+│  └────┘ └────┘ └────┘  │
+│  ┌────┐ ┌────┐ ┌────┐  │
+│  │ 📷 │ │ 🎵 │ │ ⚙  │  │
+│  │Cam  │ │Music│ │Set. │  │
+│  └────┘ └────┘ └────┘  │
+│  ...                    │
+│                          │
+└──────────────────────────┘
+```
+
+### 1.3 Bildirim Merkezi
+
+```
+┌──────────────────────────┐
+│    Bildirim Merkezi      │
+├──────────────────────────┤
+│                          │
+│  ┌─────── Bugün ──────┐ │
+│  │ WhatsApp            │ │
+│  │ Ali: "Görüşürüz"   │ │
+│  │ [Yanıtla] [Sessize]│ │
+│  └────────────────────┘ │
+│  ┌─────── Dün ────────┐ │
+│  │ Gmail               │ │
+│  │ 3 yeni e-posta      │ │
+│  │ [Arşivle] [Sil]     │ │
+│  └────────────────────┘ │
+│  ┌─────── Daha Önce ──┐ │
+│  │ Twitter             │ │
+│  │ @user seni takip etti│ │
+│  └────────────────────┘ │
+│                          │
+└──────────────────────────┘
+```
+
+---
+
+## 2. Flow Mod UI Spesifikasyonu
+
+### 2.1 Ana Ekran (Idle State)
+
+```
+┌──────────────────────────┐
+│                          │
+│                          │
+│                          │
+│         12:00            │ ← Large Clock
+│     Pazartesi, 1        │
+│     Haziran 2026        │ ← Date
+│                          │
+│                          │
+│    ─── ─── ─── ───     │ ← Gesture Hints (fade)
+│  ⬆️Uyg. ➡️Son ⬅️Bild.│
+│                          │
+│     ⚡ Önerilen          │ ← Suggested Apps
+│  ┌────┐ ┌────┐         │
+│  │ 📞 │ │ 🌐 │         │
+│  └────┘ └────┘         │
+│                          │
+│  "Jestlerle keşfet"     │ ← Bottom Hint
+└──────────────────────────┘
+```
+
+### 2.2 Gesture Flow
+
+```
+⬆️ Yukarı Çek → App Menu
+═══════════════════════════
+        ┌──────────┐
+        │ App Menu │
+     ┌──┴────┬─────┴──┐
+     │ ⬆️    │ ⬆️     │
+     │📞Phone│🌐Web   │
+     └───┬───┴────┬───┘
+         │  ⬆️    │
+         └────────┘
+         (scroll)
+
+➡️ Sağa Kaydır → Recent Apps
+═══════════════════════════
+  ┌──────┐  ┌──────┐  ┌──────┐
+  │  Önceki │  │  Şu an  │  │  Sonraki│
+  │  Uyg.  │  │  Uyg.  │  │  Uyg.  │
+  └──────┘  └──────┘  └──────┘
+  ←─── swipe ────────────
+
+⬅️ Sola Kaydır → Notifications
+═══════════════════════════
+  ┌──────────────┐
+  │ WhatsApp     │
+  │ "Mesaj var"  │
+  │ [Göster]     │
+  ├──────────────┤
+  │ Gmail        │
+  │ "2 yeni mail"│
+  └──────────────┘
+
+⬇️ Aşağı Kaydır → Quick Settings
+═══════════════════════════
+  ┌──────────────────┐
+  │  ✈️ 📶 🔒 🔦    │
+  │  Uçak WiFi BT Fener│
+  │                   │
+  │  🔆───────○────  │
+  │  🔊─────○──────  │
+  └──────────────────┘
+```
+
+### 2.3 Gesture Specifications
+
+| Jest | Başlangıç | Minimum Mesafe | Maksimum Süre | Aksiyon |
+|------|-----------|---------------|---------------|---------|
+| Yukarı Çek | Alt %20 | 100px | 500ms | App Menu |
+| Sağa Kaydır | Sol %30 | 80px | 400ms | Recent Apps |
+| Sola Kaydır | Sağ %30 | 80px | 400ms | Notifications |
+| Aşağı Kaydır | Üst %20 | 100px | 500ms | Quick Settings |
+| Çift Dokun | Her yer | - | 300ms (aralık) | Home |
+| Uzun Basma | Her yer | - | 800ms | Sesli Komut |
+| Pinch | Her yer | 50px (mesafe) | 500ms | App Selector |
+
+---
+
+## 3. Renk Paleti
+
+### 3.1 Açık Tema
+
+| Token | Renk | Hex | Kullanım |
+|-------|------|-----|----------|
+| --bg-primary | Beyaz | #FFFFFF | Arka plan |
+| --bg-secondary | Açık Gri | #F5F5F5 | Kart arka plan |
+| --bg-tertiary | Gri | #E0E0E0 | Tıklanabilir alan |
+| --text-primary | Siyah | #1A1A1A | Ana metin |
+| --text-secondary | Koyu Gri | #666666 | İkincil metin |
+| --accent | Mavi | #007AFF | Vurgu rengi |
+| --android | Yeşil | #3DDC84 | Android etiketi |
+| --ios | Mavi | #007AFF | iOS etiketi |
+| --cross | Kırmızı | #FF6B6B | Cross-platform |
+
+### 3.2 Koyu Tema
+
+| Token | Renk | Hex | Kullanım |
+|-------|------|-----|----------|
+| --bg-primary | Lacivert | #0A0A23 | Arka plan |
+| --bg-secondary | Koyu Lacivert | #1A1A2E | Kart arka plan |
+| --bg-tertiary | Orta Lacivert | #16213E | Tıklanabilir alan |
+| --text-primary | Beyaz | #FFFFFF | Ana metin |
+| --text-secondary | Açık Gri | #AAAAAA | İkincil metin |
+| --accent | Turkuaz | #64FFDA | Vurgu rengi |
+| --android | Yeşil | #3DDC84 | Android etiketi |
+| --ios | Mavi | #007AFF | iOS etiketi |
+| --cross | Kırmızı | #FF6B6B | Cross-platform |
+
+---
+
+## 4. Tipografi
+
+| Öğe | Font | Boyut | Ağırlık |
+|-----|------|-------|---------|
+| Saat (Flow) | SF Pro Display / Roboto | 48px | Light (300) |
+| Tarih (Flow) | SF Pro / Roboto | 12px | Regular (400) |
+| Uygulama Adı | SF Pro / Roboto | 7px | Medium (500) |
+| Başlık | SF Pro / Roboto | 14px | Bold (700) |
+| Alt Başlık | SF Pro / Roboto | 9px | Bold (700) |
+| Metin | SF Pro / Roboto | 8-10px | Regular (400) |
+| Jest Etiketi | SF Pro / Roboto | 8px | Regular (400) |
+
+---
+
+## 5. Animasyon Spesifikasyonları
+
+| Animasyon | Süre | Easing | Açıklama |
+|-----------|------|--------|----------|
+| Mod Geçişi | 300ms | ease-in-out | Normal ↔ Flow |
+| Sayfa Geçişi | 250ms | ease-out | App açma/kapama |
+| Bildirim Giriş | 200ms | ease-out | Slide down |
+| Bildirim Çıkış | 150ms | ease-in | Slide up |
+| Gesture Feedback | 100ms | linear | Haptic + visual |
+| Scroll | - | deceleration | Native scroll physics |
+
+---
+
+*Bu spesifikasyon taslak halindedir. Geliştirme sürecinde güncellenecektir.*
