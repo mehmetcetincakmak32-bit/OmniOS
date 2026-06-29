@@ -56,6 +56,20 @@ jobs:
           flutter pub get
           flutter analyze
 
+  kernel-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Kernel Testlerini Derle ve Calistir
+        run: |
+          cd kernel
+          gcc -Wall -Iinclude -I. \
+              tests/test_kernel.c \
+              kernel_main.c scheduler.c syscalls.c timer.c \
+              mm/memory.c ipc/ipc.c fs/vfs.c drivers/driver_model.c \
+              net/network.c -o test_kernel -lm
+          ./test_kernel
+
   web-deploy:
     if: github.ref == 'refs/heads/main'
     needs: [python-tests]
