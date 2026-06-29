@@ -136,7 +136,11 @@ python src/main_improved.py
 
 ### Testleri Çalıştırma
 ```bash
+# Testleri çalıştır (pytest)
 python src/tests/test_engine.py
+
+# Alternatif: pytest komutu ile
+python -m pytest src/tests/test_engine.py -v
 ```
 
 ---

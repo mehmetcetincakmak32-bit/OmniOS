@@ -55,15 +55,17 @@ static const ClassMapping _ios_to_android[] = {
     {NULL, NULL}
 };
 
-static const ClassMapping _android_to_ios[100];
+static ClassMapping _android_to_ios[100];
 static int _reverse_count = 0;
 
 static void _build_reverse_map(void) {
     if (_reverse_count > 0) return;
     for (int i = 0; _ios_to_android[i].ios_class != NULL; i++) {
-        _android_to_ios[_reverse_count].ios_class = _ios_to_android[i].android_class;
-        _android_to_ios[_reverse_count].android_class = _ios_to_android[i].ios_class;
-        _reverse_count++;
+        if (_reverse_count < 100) {
+            _android_to_ios[_reverse_count].ios_class = _ios_to_android[i].android_class;
+            _android_to_ios[_reverse_count].android_class = _ios_to_android[i].ios_class;
+            _reverse_count++;
+        }
     }
 }
 

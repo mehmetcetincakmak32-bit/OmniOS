@@ -36,9 +36,9 @@ static const bool _state_transitions[5][5] = {
 };
 
 void om_system_init(SystemConfig* config) {
-    _current_state = STATE_BOOTING;
-    _current_mode = MODE_NORMAL;
+    (void)config;
     _current_state = STATE_IDLE;
+    _current_mode = MODE_NORMAL;
 }
 
 void om_system_shutdown(void) {

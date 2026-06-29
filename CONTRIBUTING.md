@@ -45,7 +45,7 @@ python src/tests/test_engine.py  # Testlerin geçtiğini doğrula
 
 ## Test
 ```bash
-python src/tests/test_engine.py    # Python testleri
+python src/tests/test_engine.py    # Python testleri (pytest)
 python src/tests/benchmark.py       # Performans testi
 cd core && make test                # C testleri
 ```

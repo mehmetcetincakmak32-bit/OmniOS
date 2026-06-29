@@ -27,8 +27,14 @@ python --version  # Python 3.8+ olmalı
 
 ### 1.3 Prototipi Çalıştırma
 ```bash
-cd src
-python main.py
+cd OmniOS
+python src/main_improved.py
+
+# Python testleri
+python src/tests/test_engine.py -v
+
+# Dokümantasyon
+gitBook pages
 ```
 
 ---

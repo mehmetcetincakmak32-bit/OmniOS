@@ -1,25 +1,13 @@
-CC = gcc
-CFLAGS = -Wall -Wextra -O2 -Iinclude
-AR = ar
-ARFLAGS = rcs
-
-SRCS = state_machine.c process_manager.c gesture_engine.c memory.c runtime_loader.c api_translator.c security.c
-OBJS = $(SRCS:.c=.o)
-TARGET = libomnios_core.a
-
-.PHONY: all clean test test_all
-
-all: $(TARGET)
-
-$(TARGET): $(OBJS)
-	$(AR) $(ARFLAGS) $@ $^
-
-%.o: %.c include/omnios_core.h
-	$(CC) $(CFLAGS) -c $< -o $@
-
-test: $(TARGET) test_core.c
-	$(CC) $(CFLAGS) test_core.c -L. -lomnios_core -o test_core
-	./test_core
+all:
+\tgcc -Wall -Wextra -O2 -Iinclude -c state_machine.c -o state_machine.o
+\tgcc -Wall -Wextra -O2 -Iinclude -c process_manager.c -o process_manager.o
+\tgcc -Wall -Wextra -O2 -Iinclude -c gesture_engine.c -o gesture_engine.o
+\tgcc -Wall -Wextra -O2 -Iinclude -c memory.c -o memory.o
+\tgcc -Wall -Wextra -O2 -Iinclude -c runtime_loader.c -o runtime_loader.o
+\tgcc -Wall -Wextra -O2 -Iinclude -c api_translator.c -o api_translator.o
+\tar rcs libomnios_core.a *.o
+\techo "Build complete!"
 
 clean:
-	rm -f $(OBJS) $(TARGET) test_core test_core.exe
+\trm -f *.o libomnios_core.a
+

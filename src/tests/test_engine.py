@@ -191,35 +191,8 @@ def test_full_workflow():
 
 
 if __name__ == "__main__":
-    tests = [
-        test_engine_boot,
-        test_engine_launch_app,
-        test_engine_launch_nonexistent,
-        test_mode_toggle,
-        test_mode_set,
-        test_process_create,
-        test_process_kill,
-        test_process_stats,
-        test_gesture_recognition,
-        test_gesture_execution,
-        test_gesture_hints,
-        test_api_translator,
-        test_memory_manager,
-        test_memory_pressure,
-        test_plugin_system,
-        test_system_info,
-        test_full_workflow,
-    ]
+    import pytest
+    import sys
+    print("OmniOS Core Engine Testleri");
 
-    passed = 0
-    failed = 0
-    for test in tests:
-        try:
-            test()
-            passed += 1
-        except Exception as e:
-            print(f"[FAIL] {test.__name__}: {e}")
-            failed += 1
-
-    print(f"\n{'='*40}")
-    print(f"Sonuc: {passed} passed, {failed} failed, {len(tests)} total")
+    sys.exit(pytest.main([__file__, "-v"]))
