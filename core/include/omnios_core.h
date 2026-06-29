@@ -128,4 +128,41 @@ float       om_memory_get_usage_percent(void);
 void        om_system_get_info(char* buffer, uint32_t buffer_size);
 uint32_t    om_system_get_uptime(void);
 
+/* API Translation */
+const char* om_api_ios_to_android(const char* ios_class);
+const char* om_api_android_to_ios(const char* android_class);
+uint32_t    om_api_get_translation_count(void);
+int         om_api_translate_method(const char* platform, const char* class_name,
+                                    const char* method, char* out, uint32_t out_size);
+const char* om_api_get_runtime(PlatformType platform);
+int         om_api_get_api_level(PlatformType platform);
+bool        om_api_is_compatible(PlatformType app, PlatformType runtime);
+
+/* Security */
+typedef int PermissionType;
+#define PERM_CAMERA         0
+#define PERM_MICROPHONE     1
+#define PERM_LOCATION       2
+#define PERM_STORAGE_READ   3
+#define PERM_STORAGE_WRITE  4
+#define PERM_CONTACTS       5
+#define PERM_CALENDAR       6
+#define PERM_NOTIFICATIONS  7
+#define PERM_BLUETOOTH      8
+#define PERM_NETWORK        9
+#define PERM_SENSORS        10
+#define PERM_PHONE          11
+#define PERM_SMS            12
+
+PermissionType om_perm_from_string(const char* name);
+const char*    om_perm_to_string(PermissionType perm);
+uint32_t       om_perm_count(void);
+bool           om_sandbox_create(uint32_t pid, const char* path);
+bool           om_sandbox_destroy(uint32_t pid);
+bool           om_perm_grant(uint32_t pid, PermissionType perm);
+bool           om_perm_revoke(uint32_t pid, PermissionType perm);
+bool           om_perm_check(uint32_t pid, PermissionType perm);
+uint32_t       om_perm_get_granted_count(uint32_t pid);
+void           om_security_get_info(char* buffer, uint32_t buffer_size);
+
 #endif /* OMNOS_CORE_H */

@@ -10,7 +10,7 @@
 static int tests_passed = 0;
 static int tests_failed = 0;
 
-#define TEST(name) do { printf("  Testing %s... ", name);
+#define TEST(name) printf("  Testing %s... ", name);
 #define END_TEST(result) do { \
     if (result) { printf("OK\n"); tests_passed++; } \
     else { printf("FAIL\n"); tests_failed++; } \
@@ -175,6 +175,71 @@ void test_runtime_loader(void) {
     END_TEST(om_runtime_can_run(PLATFORM_ANDROID, PLATFORM_CROSS) == true);
 }
 
+void test_api_translator(void) {
+    printf("\n[API Translator]\n");
+
+    TEST("iOS->Android UIView");
+    END_TEST(strcmp(om_api_ios_to_android("UIView"), "android.view.View") == 0);
+
+    TEST("iOS->Android UILabel");
+    END_TEST(strcmp(om_api_ios_to_android("UILabel"), "android.widget.TextView") == 0);
+
+    TEST("Android->iOS TextView");
+    END_TEST(strcmp(om_api_android_to_ios("android.widget.TextView"), "UILabel") == 0);
+
+    TEST("Android->iOS View");
+    END_TEST(strcmp(om_api_android_to_ios("android.view.View"), "UIView") == 0);
+
+    TEST("Ceviri sayisi > 30");
+    END_TEST(om_api_get_translation_count() >= 30);
+
+    TEST("Runtime adi Android");
+    const char* r = om_api_get_runtime(PLATFORM_ANDROID);
+    END_TEST(strstr(r, "Android") != NULL);
+
+    TEST("API seviyesi iOS");
+    END_TEST(om_api_get_api_level(PLATFORM_IOS) == 18);
+
+    TEST("API seviyesi Android");
+    END_TEST(om_api_get_api_level(PLATFORM_ANDROID) == 35);
+
+    TEST("Uyumluluk kontrol");
+    END_TEST(om_api_is_compatible(PLATFORM_CROSS, PLATFORM_ANDROID) == true);
+    END_TEST(om_api_is_compatible(PLATFORM_ANDROID, PLATFORM_ANDROID) == true);
+    END_TEST(om_api_is_compatible(PLATFORM_IOS, PLATFORM_ANDROID) == false);
+}
+
+void test_security(void) {
+    printf("\n[Security Module]\n");
+
+    TEST("Sandbox olusturma");
+    END_TEST(om_sandbox_create(1, "/tmp/omnios/test") == true);
+
+    TEST("Perm count");
+    END_TEST(om_perm_count() > 0);
+
+    TEST("Perm from string");
+    PermissionType p = om_perm_from_string("camera");
+    const char* name = om_perm_to_string(p);
+    END_TEST(strcmp(name, "camera") == 0);
+
+    TEST("Perm grant");
+    END_TEST(om_perm_grant(1, PERM_CAMERA) == true);
+
+    TEST("Perm check");
+    END_TEST(om_perm_check(1, PERM_CAMERA) == true);
+    END_TEST(om_perm_check(1, PERM_LOCATION) == false);
+
+    TEST("Perm revoke");
+    END_TEST(om_perm_revoke(1, PERM_CAMERA) == true);
+    END_TEST(om_perm_check(1, PERM_CAMERA) == false);
+
+    char buf[256];
+    om_security_get_info(buf, sizeof(buf));
+    TEST("Security info format");
+    END_TEST(strstr(buf, "sandboxes") != NULL);
+}
+
 int main(void) {
     printf("=== OmniOS Core C Test Suite ===\n");
 
@@ -183,6 +248,8 @@ int main(void) {
     test_gesture_engine();
     test_memory();
     test_runtime_loader();
+    test_api_translator();
+    test_security();
 
     printf("\n================================\n");
     printf("Sonuc: %d passed, %d failed\n", tests_passed, tests_failed);

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/app_item.dart';
+import '../models/app_data.dart';
 import '../services/runtime/runtime_manager.dart';
 import '../services/gesture_service.dart';
 import '../services/state_provider.dart';
+import '../services/system_service.dart';
 
 class SettingsScreen extends StatelessWidget {
   final OmniOSState state;
@@ -97,7 +99,7 @@ class SettingsScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: const Color(0xFF0D0D24),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -147,7 +149,7 @@ class SettingsScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: const Color(0xFF4CAF50).withOpacity(0.2),
+              color: const Color(0xFF4CAF50).withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(4),
             ),
             child: Text('● AKTIF', style: TextStyle(fontSize: 7, color: const Color(0xFF4CAF50))),
