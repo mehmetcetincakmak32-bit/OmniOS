@@ -1,0 +1,80 @@
+name: OmniOS CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Python Core Testleri
+        run: python src/tests/test_engine.py
+      - name: CLI Test
+        run: |
+          python -c "
+          import sys, os
+          sys.path.insert(0, '.')
+          from src.core.engine import OmniOSEngine
+          e = OmniOSEngine()
+          assert e.launch_app('Chrome')
+          assert e.toggle_mode() == 'flow'
+          assert e.process_gesture('swipe_up') == 'open_app_menu'
+          print('CLI integration test OK')
+          "
+
+  c-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: C Kutuphanesini Derle
+        run: |
+          cd core
+          make
+      - name: C Testlerini Calistir
+        run: |
+          cd core
+          gcc -Iinclude test_core.c -L. -lomnios_core -o test_core
+          ./test_core
+
+  flutter-analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Flutter Analiz
+        run: |
+          cd omnios_app
+          flutter pub get
+          flutter analyze
+
+  web-deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: [python-tests]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      - name: Deploy to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
