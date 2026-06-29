@@ -6,6 +6,14 @@
 
 ---
 
+## Canlı Demo
+
+**[OmniOS Web Simülatörünü Dene](https://mehmetcetincakmak32-bit.github.io/OmniOS/)**
+
+> Web tarayıcınızda OmniOS arayüzünü deneyimleyin. Normal mod ve Flow mod arasında geçiş yapın, uygulamaları keşfedin.
+
+---
+
 ## Neden OmniOS?
 
 Günümüzde mobil kullanıcılar iki büyük platform arasında sıkışmış durumda:
@@ -133,10 +141,11 @@ Detaylı mimari için: [docs/architecture.md](docs/architecture.md)
 | Normal Mod UI Spec | ✅ Tamamlandı | docs/ui-specs.md |
 | Flow Mod UI Spec | ✅ Tamamlandı | docs/ui-specs.md |
 | Mimari Doküman | ✅ Tamamlandı | docs/architecture.md |
+| Web Simülatörü | ✅ Yayında | https://mehmetcetincakmak32-bit.github.io/OmniOS/ |
 | Python Prototip | 🔧 Temel versiyon | src/ klasörü |
+| Flutter Mobil Uygulama | 📝 Kod hazır | omnios_app/ klasörü |
 | Android Uyumluluk | 📝 Taslak | Geliştirilmeli |
 | iOS Uyumluluk | 📝 Taslak | Geliştirilmeli |
-| Native Implementation | ❌ | Katkını bekliyor |
 
 ---
 
