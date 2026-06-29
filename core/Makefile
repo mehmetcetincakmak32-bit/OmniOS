@@ -19,7 +19,7 @@ $(TARGET): $(OBJS)
 $(TEST_TARGET): $(TEST_SRCS) $(TARGET)
 	$(CC) $(CFLAGS) -o $@ $(TEST_SRCS) -L. -lomnios_core
 
-%.o: %.c include/omnios_kernel.h
+%.o: %.c include/omnios_core.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 test: $(TEST_TARGET)
