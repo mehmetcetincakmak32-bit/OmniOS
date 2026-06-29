@@ -119,6 +119,28 @@ Detaylı mimari için: [docs/architecture.md](docs/architecture.md)
 
 ---
 
+## Hızlı Başlangıç
+
+### CLI ile Deneme
+```bash
+cd OmniOS
+python src/main_improved.py
+
+# Komutlar:
+#   launch Chrome  - Uygulama başlat
+#   mode           - Mod değiştir (Normal/Flow)
+#   gesture swipe_up - Jest gönder
+#   ps             - Process listesi
+#   info           - Sistem bilgisi
+```
+
+### Testleri Çalıştırma
+```bash
+python src/tests/test_engine.py
+```
+
+---
+
 ## Teknik Gereksinimler (Taslak)
 
 ### Minimum Donanım
@@ -142,7 +164,9 @@ Detaylı mimari için: [docs/architecture.md](docs/architecture.md)
 | Flow Mod UI Spec | ✅ Tamamlandı | docs/ui-specs.md |
 | Mimari Doküman | ✅ Tamamlandı | docs/architecture.md |
 | Web Simülatörü | ✅ Yayında | https://mehmetcetincakmak32-bit.github.io/OmniOS/ |
-| Python Prototip | 🔧 Temel versiyon | src/ klasörü |
+| Core Engine (Python) | ✅ Test edildi (17 test) | src/core/ |
+| CLI Arayüz | ✅ Çalışıyor | python src/main_improved.py |
+| C Core Library | ✅ Kod hazır | core/ (gcc ile derle) |
 | Flutter Mobil Uygulama | 📝 Kod hazır | omnios_app/ klasörü |
 | Android Uyumluluk | 📝 Taslak | Geliştirilmeli |
 | iOS Uyumluluk | 📝 Taslak | Geliştirilmeli |
