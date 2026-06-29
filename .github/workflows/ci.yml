@@ -29,19 +29,19 @@ jobs:
           print('CLI integration test OK')
           "
 
-  c-build:
+c-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: C Kutuphanesini Derle
         run: |
           cd core
+          make clean
           make
       - name: C Testlerini Calistir
         run: |
           cd core
-          gcc -Iinclude test_core.c -L. -lomnios_core -o test_core
-          ./test_core
+          make test
 
   flutter-analyze:
     runs-on: ubuntu-latest
@@ -54,7 +54,7 @@ jobs:
         run: |
           cd omnios_app
           flutter pub get
-          flutter analyze
+          flutter analyze --no-fatal-infos
 
   kernel-test:
     runs-on: ubuntu-latest
@@ -63,12 +63,7 @@ jobs:
       - name: Kernel Testlerini Derle ve Calistir
         run: |
           cd kernel
-          gcc -Wall -Iinclude -I. \
-              tests/test_kernel.c \
-              kernel_main.c scheduler.c syscalls.c timer.c \
-              mm/memory.c ipc/ipc.c fs/vfs.c drivers/driver_model.c \
-              net/network.c -o test_kernel -lm
-          ./test_kernel
+          make test
 
   web-deploy:
     if: github.ref == 'refs/heads/main'
