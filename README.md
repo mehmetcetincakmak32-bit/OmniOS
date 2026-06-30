@@ -1,303 +1,189 @@
-# OmniOS v2.0
+# OmniOS
 
-**Tek OS, Tüm Platformlar — Mobil Deneyimi Yeniden Tanımlıyoruz**
+**A mobile operating system — x86_64 SMP development, ARM64 mobile target**
 
-> **OmniOS v2.0**, mevcut bir mobil işletim sistemi üzerinde ikinci bir sistem katmanı olarak çalışan, **CHERI capability-based security**, **distributed-first architecture**, **first-class ML/AI**, ve **time-travel debugging** ile donatılmış, Android ve iOS'un ötesinde **rakipsiz bir next-generation mobile operating system** dur.
-
----
-
-## 🚀 Neden OmniOS v2.0?
-
-| Özellik | Android | iOS | **OmniOS v2.0** |
-|---------|---------|-----|-----------------|
-| **Kernel** | Linux (monolitik) | XNU (hybrid) | **CHERI µkernel + Unikernel hybrid** |
-| **Güvenlik** | UID/GID + SELinux | Sandbox + Code Sign | **CHERI Capability + Formal Verification** |
-| **Uygulamalar** | APK (DEX) | IPA (Mach-O) | **WASM Component + Native + ML IR** |
-| **Güncelleme** | Parçalı A/B | Monolitik OTA | **Transactional + Delta + Canary + Rollback** |
-| **AI/ML** | TFLite / NNAPI | CoreML | **First-class ML IR + Auto-Parallel + NAS** |
-| **Dağıtık** | Yok | AirDrop/Continuity | **Native Device Mesh + CRDT + Live Migration** |
-| **Debugging** | Logcat / Xcode | LLDB / Instruments | **Time-Travel + System Snapshots** |
-| **Gizlilik** | İzinler | ATT | **HW-enforced + Zero-Trust + ZK Proofs** |
-| **Dil** | Java/Kotlin | Swift/ObjC | **Rust/Zig/Swift/WASM/Any (Polyglot)** |
+OmniOS is a from-scratch operating system with a native C kernel (x86_64 SMP + ARM64), a driver ecosystem, capability-based security, Android (Waydroid) compatibility, and a Flutter-based system UI.
 
 ---
 
-## ✨ Temel Özellikler
-
-### 🔄 Çift Mod Sistemi
-| Mod | Açıklama |
-|-----|----------|
-| **Normal Mod** | Klasik mobil arayüz: uygulama gridi, widget'lar, bildirim merkezi, klasörler |
-| **Flow Mod** | Jest tabanlı, butonsuz: swipe, pinch, long-press, voice commands |
-
-### 🛡️ CHERI Capability-Based Security (YENİ v2.0)
-- **Hardware-enforced capabilities** (ARMv9-A Morello / RISC-V CHERI)
-- **Monotonic rights**: READ, WRITE, EXECUTE, DELEGATE, REVOKE, SEAL, MINT, DELETE, ADMIN
-- **Capability bounds**: base, length, permissions, seal, expiry (CHERI-native)
-- **Recursive revocation** with epoch-based invalidation
-- **Full audit trail** on every capability operation
-- **Formal verification hooks** (Frama-C/Coq/Isabelle/TLA+)
-
-### 🌐 Distributed-First Architecture (YENİ v2.0)
-- **Device Mesh**: QUIC-based mesh, CRDT state replication (GCounter, PNCounter, LWWRegister, ORSet)
-- **Raft Consensus**: Leader election, log replication, live process migration
-- **Native Device Mesh**: QUIC + mTLS + Service Mesh + Live process migration
-
-### 🧠 First-Class ML/AI (YENİ v2.0)
-- **MLIR Compiler**: ONNX → MLIR → Multi-target (CPU/GPU/NPU/TPU/DSP/VPU)
-- **AutoML / NAS**: DARTS-style neural architecture search
-- **Federated Learning**: FedAvg + Differential Privacy + Secure Aggregation
-- **Quantization**: INT8/INT4/FP16/BF16 with accuracy guarantees
-
-### ⏰ Time-Travel Debugging (YENİ v2.0)
-- **System Snapshots**: Copy-on-write, Merkle-root verified
-- **Deterministic Replay**: Deterministic execution trace buffer
-- **UI Time-Travel**: Frame scrubbing, render diff, layout inspection
-
-### 🔄 Transactional Updates (YENİ v2.0)
-- **Delta + Canary + A/B/C rollout**
-- **Instant rollback** to pre-update snapshot
-- **Automated rollback** on metric regression
-
-### 📱 Platform Bağımsızlık
-- **iOS Apps**: Native UIKit/SwiftUI via compatibility layer
-- **Android Apps**: ART emulation (API 35)
-- **Cross-Platform**: Universal WASM Component Model apps
-- **Native**: Rust/Zig/Swift/C++/Go/WASM/Python/TypeScript
-
----
-
-## 🏗️ Mimari Genel Bakış v2.0
+## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           OMNIOS v2.0 USER SPACE                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
-│  │  WASM       │ │  Native     │ │  ML IR      │ │  Legacy     │          │
-│  │  Component  │ │  (Rust/     │ │  (ONNX/     │ │  Compat     │          │
-│  │  Model      │ │   Zig/      │ │   MLIR)     │ │  (ART/      │          │
-│  │  (WASI +    │ │   Swift)    │ │             │ │   UIKit)    │          │
-│  │   Preview 2)│ │             │ │             │ │             │          │
-│  └──────┬──────┘ └──────┬──────┘ └──────┬──────┘ └──────┬──────┘          │
-├─────────┼───────────────┼───────────────┼───────────────┼──────────────────┤
-│         │  CAPABILITY-BASED SECURITY MONITOR (C-SM)                          │
-│         │  • CHERI Capabilities  • Formal Verification  • Audit Trail       │
-│         └──────────────────────────────────────────────────────────────────┘│
-├─────────────────────────────────────────────────────────────────────────────┤
-│                        OMNIKERNEL v2.0 (µkernel + Unikernel)               │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐        │
-│  │Scheduler │ │ Memory   │ │   IPC    │ │   VFS    │ │ Device   │        │
-│  │(RT+ML)   │ │ (CHERI+  │ │ (Cap'n   │ │(Content-  │ │ Model    │        │
-│  │          │ │  Wasm)   │ │  Proto)  │ │  Address)│ │ (eBPF)   │        │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘ └──────────┘        │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                         HARDWARE ABSTRACTION (HAL)                          │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐        │
-│  │  CPU     │ │  GPU/NPU │ │  Memory  │ │  Network │ │ Storage  │        │
-│  │(CHERI,   │ │(Vulkan,  │ │(CXL,     │ │(QUIC,    │ │(ZNS,     │        │
-│  │ RISC-V,  │ │ Metal,   │ │ PMEM)    │ │ BLE5.3)  │ │ KV-SSD)  │        │
-│  │ ARMv9)   │ │ CUDA)    │ │          │ │          │ │          │        │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────┘ └───────────────────┘│
-└─────────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│                  USERSPACE                           │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────────┐ │
+│  │  Flutter  │ │  wlroots │ │  Capability Daemon   │ │
+│  │  System   │ │ Compositor│ │  (token IPC/auth)   │ │
+│  │  UI       │ │          │ │                      │ │
+│  └──────────┘ └──────────┘ └──────────────────────┘ │
+│  ┌────────────────────────────────────────────────┐ │
+│  │  Waydroid (Android container + Binder IPC)     │ │
+│  └────────────────────────────────────────────────┘ │
+├─────────────────────────────────────────────────────┤
+│                  KERNEL                               │
+│  ┌─────────────┐ ┌─────────────┐ ┌────────────────┐ │
+│  │  x86_64 SMP  │ │  ARM64      │ │  Drivers        │ │
+│  │  (dev/QEMU)  │ │  (mobile)   │ │  PCI/VirtIO/   │ │
+│  │              │ │             │ │  UFS/Audio/     │ │
+│  │  APIC/GIC    │ │  GICv3      │ │  Display/Input  │ │
+│  │  ACPI        │ │  Generic    │ │  USB/Modem/NFC  │ │
+│  │  SMP         │ │  Timer      │ │  WiFi/BT/Sensors│ │
+│  └─────────────┘ └─────────────┘ └────────────────┘ │
+│  ┌─────────────┐ ┌─────────────┐ ┌────────────────┐ │
+│  │  PMM (Buddy) │ │  VMM (4Lv)  │ │  Scheduler      │ │
+│  │  NUMA-aware  │ │  Higher-half│ │  SMP RR + Load  │ │
+│  └─────────────┘ └─────────────┘ └────────────────┘ │
+├─────────────────────────────────────────────────────┤
+│                  ARM64 BSP (SM8250)                    │
+│  PM8150 PMIC  MDSS Display  QCA6391 WiFi/BT/GPS      │
+│  X55 Modem    NXP PN553 NFC  Synaptics Touch          │
+│  SLPI Sensors ADSP Audio    DWC3 USB3                 │
+│  UFS 3.0      Fingerprint   USB Gadget (ADB/MTP)     │
+└─────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## ⚡ Hızlı Başlangıç
+## What Works Now
 
-### CLI ile Deneme
+### Kernel — x86_64 SMP (`ARCH=x86_64`)
+- 4-level paging, higher-half VMA, NX/SMEP/SMAP
+- GDT (64-bit, TSS with IST), IDT (256 vector), PIC/APIC
+- SMP: SIPI AP boot, per-CPU GS.base, per-CPU runqueues
+- ACPI: RSDP/RSDT/MADT/FADT, poweroff/reboot
+- Physical memory: buddy allocator, 10 orders, NUMA-aware
+- Virtual memory: VM regions, demand paging, kernel heap
+- Process/thread: PCBs, inline assembly context switch
+- Scheduler: SMP round-robin, tick, yield, sleep/wake, load balance
+- PCI: config space enumeration, MMIO BARs
+- VirtIO: modern PCI transport, descriptor rings
+
+### Kernel — ARM64 Mobile (`ARCH=arm64`)
+- ARM64 boot (EL2→EL1, FP/SIMD, page tables, SMP spin-table)
+- GICv3, generic timer
+- User page tables, EL0 entry via ERET
+- Exception vectors (SVC, IRQ, sync handlers)
+- initramfs with cpio + ELF loader
+
+### BSP — Snapdragon 865 (SM8250)
+- **PMIC**: PM8150 charger, fuel gauge (%, mV, °C)
+- **Display**: MDSS framebuffer 1080x2340 32bpp
+- **Touch**: Synaptics S3908 (I2C)
+- **Modem**: X55 RIL + IMS/VoLTE/WiFi Calling
+- **WiFi/BT/GPS**: QCA6391 (SDIO/UART)
+- **Audio**: ADSP + WCD938x I2S
+- **Sensors**: SLPI accel/gyro/light/proximity
+- **Storage**: UFS 3.0 flash
+- **USB**: DWC3 OTG + gadget (ADB/MTP)
+- **NFC**: NXP PN553
+- **Fingerprint**: enroll/authenticate
+- **Power**: suspend/resume, cpufreq, thermal
+- **RTC**: PM8150 epoch/alarm
+- **Input**: event queue, power/volume buttons
+
+### Userspace
+- ELF64 loader, cpio initramfs
+- System calls: exit/write/read/open/close/sleep/getpid/fork/execve/brk/yield/time/poweroff/reboot
+- Device filesystem (`/dev/null`, `/dev/console`, `/dev/tty0`, `/dev/kmsg`)
+- Process filesystem (`/proc/cpuinfo`, `/proc/meminfo`, `/proc/uptime`, `/proc/battery`)
+- TTY console, kernel log ring buffer
+- Pipe IPC, signal handling
+
+### Security
+- seccomp-BPF profiles (4 profiles: default, compositor, app, Waydroid)
+- Capability token IPC: `capd` daemon + `libomnios_cap` client library
+- Unix SOCK_SEQPACKET with rights bitmap (read/write/execute/admin)
+
+### Android Compatibility
+- Waydroid binder probing (`/dev/binder`, `/dev/hwbinder`, `/dev/vndbinder`)
+- Capability token registration for Waydroid containers
+
+### Flutter System UI
+- BasicMessageChannel JSON bridge between Dart and C embedder
+- Platform bridge service (`omnios_app/lib/services/platform_bridge.dart`)
+
+### OTA Updates
+- A/B slot GPT layout (boot_a, root_a, boot_b, root_b, data, metadata)
+- Full update lifecycle: status/prepare/apply/switch/commit/rollback/verify
+- dm-verity hash tree verification
+
+---
+
+## Build
+
+### x86_64 (development on QEMU)
 ```bash
-cd OmniOS
-python src/main_improved.py
-
-# Komutlar:
-#   launch Chrome     - Uygulama başlat
-#   mode              - Mod değiştir (Normal/Flow)
-#   gesture swipe_up  - Jest gönder
-#   ps                - Process listesi
-#   info              - Sistem bilgisi
-#   apps              - Uygulama listesi
-#   help              - Tüm komutları göster
-#   shutdown          - Çıkış
+cd kernel
+make test                          # run test suite
+make ARCH=x86_64 all               # build kernel
+make run_qemu                      # launch in QEMU (SMP 4, KVM)
 ```
 
-### Testleri Çalıştırma
+### ARM64 (mobile target)
 ```bash
-# Python testleri (pytest)
-python -m pytest src/tests/test_engine.py -v
-
-# Basit test çalıştırıcı
-python src/tests/test_engine.py
-
-# Tüm testler: 17/17 passed
+cd kernel
+make ARCH=arm64 CC=aarch64-linux-gnu-gcc all   # cross-compile
+make ARCH=arm64 run_qemu_arm64                  # QEMU aarch64 virt
 ```
 
-### C Core Library Derleme
+### Userspace
 ```bash
-cd core
-make clean && make test
-# libomnios_core.a + test_core binary
-```
-
-### Flutter Mobil Uygulama
-```bash
-cd omnios_app
-flutter pub get
-flutter run
+cd userspace/compositor && meson setup build && meson compile -C build
+cd omnios_app && flutter pub get && flutter run
+scripts/gen_initramfs.sh arm64                  # build initramfs
 ```
 
 ---
 
-## 🧪 Test ve Kalite
-
-```bash
-# Python unit tests (17/17 passing)
-python -m pytest src/tests/test_engine.py -v
-
-# CI/CD Pipeline (GitHub Actions):
-# ✅ python-tests    - 17 unit tests
-# ✅ c-build         - C core library + tests
-# ✅ flutter-analyze - Flutter static analysis
-# ✅ kernel-test     - Kernel test suite
-# ✅ web-deploy      - GitHub Pages deployment
-```
-
----
-
-## 📊 Proje Durumu v2.0
-
-| Bileşen | Durum | Açıklama |
-|---------|-------|----------|
-| **Core Engine (Python)** | ✅ **Production** | 17/17 testler geçiyor |
-| **Capability Security** | ✅ **Production** | CHERI/seL4-inspired, audit trail |
-| **Distributed Systems** | ✅ **Production** | Raft, CRDTs, Device Mesh |
-| **ML/AI System** | ✅ **Production** | MLIR, AutoML, Federated Learning |
-| **C Core Library** | ✅ **Ready** | Makefile, test_core, 8 modül |
-| **Kernel (C)** | ✅ **Ready** | Microkernel, test suite, 15+ modül |
-| **Flutter Mobil App** | ✅ **Ready** | Normal/Flow UI, widgets, services |
-| **Time-Travel Debug** | 🔄 **In Progress** | Snapshots, replay, UI scrubber |
-| **Transactional Updates** | 🔄 **In Progress** | Delta, canary, rollback |
-| **Declarative UI** | 🔄 **In Progress** | Time-travel, hot-reload |
-| **Android Compat** | 📝 **Planned** | ART emulation |
-| **iOS Compat** | 📝 **Planned** | UIKit bridge |
-
----
-
-## 📁 Proje Yapısı
+## Project Structure
 
 ```
 OmniOS/
-├── src/core/                    # Python Core Engine (15 modül)
-│   ├── engine.py               # Ana motor (OmniOSEngine)
-│   ├── security.py             # 🔐 CHERI Capability Security
-│   ├── distributed.py          # 🌐 Raft, CRDTs, DeviceMesh
-│   ├── ml_system.py            # 🧠 MLIR, AutoML, Federated Learning
-│   ├── logger.py               # Structured logging
-│   ├── power_manager.py        # ⚡ Power states, profiles
-│   ├── notification_center.py  # 🔔 Notification system
-│   ├── settings_manager.py     # ⚙️ 25+ settings, persistence
-│   ├── theme_manager.py        # 🎨 Light/Dark, color palettes
-│   ├── animation.py            # ✨ Easing, spring, sequences
-│   ├── power_manager.py        # Power states
-│   ├── power_manager.py        # Power states
-│   ├── notification_center.py  # Notification system
-│   ├── settings_manager.py     # Settings with validation
-│   ├── theme_manager.py        # Theme system
-│   ├── animation.py            # Animation system
-│   ├── distributed.py          # Distributed systems
-│   ├── ml_system.py            # ML/AI system
-│   ├── security.py             # Capability security
-│   ├── logger.py               # Logging
-│   ├── power_manager.py        # Power management
-│   ├── notification_center.py  # Notification center
-│   ├── settings_manager.py     # Settings manager
-│   ├── theme_manager.py        # Theme manager
-│   ├── animation.py            # Animation system
-│   ├── distributed.py          # Distributed systems
-│   ├── ml_system.py            # ML system
-│   ├── security.py             # Security
-│   └── __init__.py             # Exports
-├── core/                       # C Core Library
-│   ├── include/omnios_core.h   # C API headers
-│   ├── include/omnios_cheri.h  # 🔐 CHERI C API
-│   ├── *.c (8 modules)         # State, process, gesture, memory, runtime, api, security
-│   ├── test_core.c             # C test suite
-│   └── Makefile                # Build + test target
-├── kernel/                     # C Microkernel
-│   ├── *.c (15+ modules)       # Scheduler, memory, IPC, VFS, drivers, net, timer
-│   ├── tests/test_kernel.c     # Kernel test suite
-│   ├── include/omnios_kernel.h
-│   └── Makefile
-├── omnios_app/                 # Flutter Mobil App
-│   ├── lib/main.dart           # Entry point
-│   ├── lib/screens/            # Normal/Flow/Lock/Settings/Detail
-│   ├── lib/widgets/            # StatusBar, NavBar, NotificationCenter
-│   ├── lib/services/           # Runtime, gesture, state, system
-│   ├── lib/models/             # AppItem, AppData
-│   └── pubspec.yaml
-├── .github/workflows/          # CI/CD
-│   ├── ci.yml                  # Main pipeline (5 jobs)
-│   └── c-cpp.yml               # C/C++ build
-├── docs/                       # Documentation
-│   ├── architecture.md         # v1 architecture
-│   ├── ARCHITECTURE_v2.md      # 📐 v2.0 architecture spec
-│   ├── development-guide.md
-│   ├── ui-specs.md
-│   └── features.md
-├── ARCHITECTURE_v2.md          # 📐 v2.0 Architecture Spec
-├── README.md                   # This file
-├── CONTRIBUTING.md
-├── LICENSE
-└── setup.sh / setup.bat
+├── kernel/                      # Native C kernel
+│   ├── arch/x86_64/             # x86_64 SMP (boot, GDT, IDT, APIC, ACPI, paging)
+│   ├── arch/arm64/              # ARM64 (boot, GIC, timer, exceptions, page tables)
+│   ├── bsp/sm8250/              # Snapdragon 865 BSP
+│   │   └── drivers/             # 14 mobile drivers (PMIC, display, touch, modem, etc.)
+│   ├── mm/                      # PMM (buddy) + VMM (4-level)
+│   ├── proc/                    # Process/thread management, signals
+│   ├── sched/                   # SMP scheduler
+│   ├── fs/                      # ELF loader, initramfs, devfs, procfs
+│   ├── ipc/                     # Pipe IPC
+│   ├── drivers/                 # PCI, VirtIO, TTY
+│   ├── include/                 # omnios_kernel.h
+│   └── Makefile                 # Build: x86_64 + ARM64, test, QEMU targets
+├── userspace/
+│   ├── compositor/              # wlroots-based compositor
+│   ├── flutter-embedder/        # Flutter engine C embedder (Wayland+EGL)
+│   ├── security/                # capd daemon, libomnios_cap, Waydroid binder
+│   └── init/                    # PID 1 init (ELF compiled for initramfs)
+├── omnios_app/                  # Flutter system UI
+│   └── lib/services/            # Platform bridge, gesture, state
+├── scripts/                     # build_rootfs, run_qemu, partition_layout, ota_update, gen_initramfs
+├── core/                        # C core library (seccomp profiles)
+├── .github/workflows/           # CI (10+ jobs: x86_64 + ARM64, compositor, capability, security)
+└── third_party/OpenHands        # AI coding agent (submodule)
 ```
 
 ---
 
-## 🤝 Katkıda Bulunma
+## CI/CD
 
-Bu proje **topluluk odaklıdır**. Herkes katkıda bulunabilir:
-
-1. **Security** — CHERI capabilities, formal verification, audit
-2. **Distributed** — Raft, CRDTs, Device Mesh, QUIC mesh
-3. **ML/AI** — MLIR compiler, NAS, Federated Learning, quantization
-3. **Kernel** — Scheduler, memory, drivers, VFS, IPC
-4. **UI/UX** — Normal/Flow modes, declarative UI, time-travel
-4. **Documentation** — Technical docs, translation, examples
-5. **Testing** — Unit, integration, fuzzing, formal verification
-
-Detaylı katkı rehberi: [docs/development-guide.md](docs/development-guide.md)
-
----
-
-## 📜 Lisans
-
-**MIT License** — Tamamen açık kaynak, ticari kullanıma izin verir.
+| Job | Status |
+|-----|--------|
+| python-tests | ✅ Python core engine tests |
+| c-build | ✅ C core library compile + test |
+| flutter-analyze | ✅ Flutter static analysis |
+| kernel-test | ✅ x86_64 kernel build + test suite |
+| kernel-arm64-build | ✅ ARM64 cross-compile |
+| kernel-config-validate | ✅ Defconfig validation |
+| rootfs-build-validate | ✅ Script validation |
+| compositor-build | ✅ wlroots compositor build |
+| security-profile-test | ✅ seccomp profiles |
+| capability-build | ✅ Capability IPC + Waydroid binder |
 
 ---
 
-## 🔗 Bağlantılar
+## License
 
-- **GitHub**: https://github.com/mehmetcetincakmak32-bit/OmniOS
-- **Web Demo**: https://mehmetcetincakmak32-bit.github.io/OmniOS/
-- **Architecture v2.0**: [ARCHITECTURE_v2.md](ARCHITECTURE_v2.md)
-- **Issues**: GitHub Issues
-
----
-
-## 📈 Roadmap v2.1+
-
-- [ ] **Formal Verification Pipeline** — seL4-style proofs for capability system
-- [ ] **Time-Travel Debugger** — Full system snapshots, UI time-travel
-- [ ] **Transactional Updater** — Delta, canary, instant rollback
-- [ ] **Declarative UI Framework** — Time-travel, hot-reload, layout inspector
-- [ ] **Zero-Trust Networking** — mTLS everywhere, ZK proofs
-- [ ] **eBPF Runtime Security** — Runtime capability monitoring
-- [ ] **Hardware Enforced Isolation** — ARM CCA, RISC-V PMP, Intel TDX
-- [ ] **Zero-Knowledge Privacy** — ZK-SNARKs for private compute
-
----
-
-*OmniOS v2.0 — Geleceğin mobil deneyimi, bugünden şekilleniyor. 🚀*
-
-**Rakipsiz. Güvenli. Dağıtık. Akıllı.**
+MIT License — See [LICENSE](LICENSE)

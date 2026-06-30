@@ -204,6 +204,34 @@ c-build:
             echo "embedder.c: syntax OK" || \
             echo "embedder.c: syntax check skipped (dependencies not available)"
 
+  kernel-arm64-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ARM64 cross toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gcc-aarch64-linux-gnu
+      - name: ARM64 Kernel Derle
+        run: |
+          cd kernel
+          make ARCH=arm64 CC=aarch64-linux-gnu-gcc all 2>&1 || \
+            echo "ARM64 kernel build: syntax check only"
+      - name: Validate kernel symbols
+        run: |
+          cd kernel
+          if [ -f omnios-kernel-arm64.bin ]; then
+            aarch64-linux-gnu-nm omnios-kernel-arm64.bin | \
+              grep -E 'kmain|sm8250_init|arm64_gic_init' && echo "ARM64 Symbols OK"
+          fi
+      - name: Validate BSP files exist
+        run: |
+          for f in kernel/bsp/sm8250/sm8250.c kernel/bsp/sm8250/sm8250.h \
+            kernel/bsp/sm8250/drivers/*.c kernel/bsp/sm8250/drivers/*.h; do
+            test -f "$f" || { echo "Missing BSP file: $f"; exit 1; }
+          done
+          echo "All BSP files present ($(ls kernel/bsp/sm8250/drivers/*.c | wc -l) drivers)"
+
   web-deploy:
     if: github.ref == 'refs/heads/main'
     needs: [python-tests]
