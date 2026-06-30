@@ -40,9 +40,8 @@ BSP_SRCS  = bsp/sm8250/sm8250.c \
 FS_SRCS   = fs/elf.c fs/initramfs.c fs/devfs.c fs/procfs.c
 TTY_SRCS  = drivers/tty.c
 KLOG_SRCS = klog.c
-LEGACY_SRCS = kernel_main.c scheduler.c syscall.c timer.c \
-              mm/memory.c ipc/ipc.c fs/vfs.c drivers/driver_model.c \
-              net/network.c hal/mobile_hal.c
+LEGACY_SRCS = kernel_main.c syscall.c timer.c \
+              mm/memory.c ipc/ipc.c
 else
 CFLAGS    = -Wall -Wextra -Werror -O2 -m64 -mno-red-zone \
             -ffreestanding -nostdlib -nostartfiles -nodefaultlibs \
@@ -59,9 +58,8 @@ MM_SRCS   = mm/pmm.c mm/vmm.c
 PROC_SRCS = proc/process.c
 SCHED_SRCS = sched/sched.c
 DRV_SRCS  = drivers/pci.c
-LEGACY_SRCS = kernel_main.c scheduler.c syscall.c timer.c \
-              mm/memory.c ipc/ipc.c fs/vfs.c drivers/driver_model.c \
-              net/network.c hal/mobile_hal.c
+LEGACY_SRCS = kernel_main.c syscall.c timer.c \
+              mm/memory.c ipc/ipc.c
 endif
 
 OBJS      = $(ARCH_ASM:.S=.o) $(ARCH_SRCS:.c=.o) \
