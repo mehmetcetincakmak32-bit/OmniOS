@@ -11,6 +11,7 @@ from .animation import get_animation_manager, animate, animate_to, fade_in, fade
 from .distributed import get_device_mesh_manager, DeviceMeshManager, DeviceMesh, NodeInfo, LogEntry, RaftConsensus, CRDT, GCounter, PNCounter, LWWRegister, ORSet
 from .ml_system import get_ml_system, MLSystem, InferenceEngine, ModelCompiler, AutoMLController, FederatedLearningCoordinator, HardwareTarget, QuantizationType, ModelFormat, TensorSpec, ModelMetadata, MLIRModule, CompiledModule
 from .security import CapabilityManager, Capability, CapabilityBounds, CapabilityTable, SecurityDomain, SecurityPolicy, CapabilityRight, ObjectType, SecurityError, VerificationAnnotations
+from .time_travel import get_snapshot_manager, SnapshotManager, Snapshot, SystemState, SnapshotType, SnapshotStatus, ReplayMode, MerkleTree, TimeTravelDebugger, get_time_travel_debugger
 
 __all__ = [
     "OmniOSEngine", "ModeManager", "Mode",
@@ -25,4 +26,5 @@ __all__ = [
     "get_device_mesh_manager", "DeviceMeshManager", "DeviceMesh", "NodeInfo", "LogEntry", "RaftConsensus", "CRDT", "GCounter", "PNCounter", "LWWRegister", "ORSet",
     "get_ml_system", "MLSystem", "InferenceEngine", "ModelCompiler", "AutoMLController", "FederatedLearningCoordinator", "HardwareTarget", "QuantizationType", "ModelFormat", "TensorSpec", "ModelMetadata", "MLIRModule", "CompiledModule",
     "CapabilityManager", "Capability", "CapabilityBounds", "CapabilityTable", "SecurityDomain", "SecurityPolicy", "CapabilityRight", "ObjectType", "SecurityError", "VerificationAnnotations",
+    "get_snapshot_manager", "SnapshotManager", "Snapshot", "SystemState", "SnapshotType", "SnapshotStatus", "ReplayMode", "MerkleTree", "TimeTravelDebugger", "get_time_travel_debugger",
 ]

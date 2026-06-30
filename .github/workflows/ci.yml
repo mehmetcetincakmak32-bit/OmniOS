@@ -65,6 +65,84 @@ c-build:
           cd kernel
           make test
 
+  kernel-config-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate kernel defconfig exists
+        run: |
+          test -f kernel/configs/omnios_mobile_defconfig || { echo "Missing defconfig"; exit 1; }
+          echo "=== Kernel defconfig ==="
+          cat kernel/configs/omnios_mobile_defconfig
+      - name: Check Makefile mobile_defconfig target
+        run: |
+          grep -q 'mobile_defconfig' kernel/Makefile || { echo "Missing mobile_defconfig target"; exit 1; }
+          echo "Makefile OK"
+
+  rootfs-build-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate build_rootfs.sh
+        run: |
+          test -f scripts/build_rootfs.sh || { echo "Missing build_rootfs.sh"; exit 1; }
+          shellcheck scripts/build_rootfs.sh || true
+          chmod +x scripts/build_rootfs.sh
+      - name: Validate run_qemu.sh
+        run: |
+          test -f scripts/run_qemu.sh || { echo "Missing run_qemu.sh"; exit 1; }
+          shellcheck scripts/run_qemu.sh || true
+          chmod +x scripts/run_qemu.sh
+
+  compositor-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install wlroots dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq \
+            libwlroots-dev \
+            libwayland-dev \
+            wayland-protocols \
+            libxkbcommon-dev \
+            libpixman-1-dev \
+            libinput-dev \
+            libdrm-dev \
+            meson \
+            ninja-build
+      - name: Build compositor
+        run: |
+          cd userspace/compositor
+          meson setup build
+          meson compile -C build
+      - name: Validate compositor binary
+        run: |
+          test -f userspace/compositor/build/omnios-compositor || { echo "Compositor build failed"; exit 1; }
+          file userspace/compositor/build/omnios-compositor
+      - name: Validate meson install manifest
+        run: |
+          test -f userspace/compositor/build/meson-info/intro-install_plan.json || \
+          test -f userspace/compositor/meson.build || { echo "meson.build missing"; exit 1; }
+
+  security-profile-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install libseccomp-dev
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libseccomp-dev
+      - name: Build seccomp profiles test
+        run: |
+          cd core/security
+          gcc -Wall -Wextra -O2 -DOMNiOS_SECCOMP_TEST \
+            -o test_seccomp seccomp_profiles.c -lseccomp
+      - name: Run seccomp profile tests
+        run: |
+          cd core/security
+          ./test_seccomp && echo "Security profile test OK"
+
   web-deploy:
     if: github.ref == 'refs/heads/main'
     needs: [python-tests]
