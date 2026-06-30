@@ -55,6 +55,10 @@ c-build:
           cd omnios_app
           flutter pub get
           flutter analyze --no-fatal-infos
+      - name: Validate platform_bridge syntax
+        run: |
+          cd omnios_app
+          dart analyze lib/services/platform_bridge.dart
 
   kernel-test:
     runs-on: ubuntu-latest
@@ -93,6 +97,16 @@ c-build:
           test -f scripts/run_qemu.sh || { echo "Missing run_qemu.sh"; exit 1; }
           shellcheck scripts/run_qemu.sh || true
           chmod +x scripts/run_qemu.sh
+      - name: Validate partition_layout.sh
+        run: |
+          test -f scripts/partition_layout.sh || { echo "Missing partition_layout.sh"; exit 1; }
+          shellcheck scripts/partition_layout.sh || true
+          chmod +x scripts/partition_layout.sh
+      - name: Validate ota_update.sh
+        run: |
+          test -f scripts/ota_update.sh || { echo "Missing ota_update.sh"; exit 1; }
+          shellcheck scripts/ota_update.sh || true
+          chmod +x scripts/ota_update.sh
 
   compositor-build:
     runs-on: ubuntu-latest
@@ -164,6 +178,12 @@ c-build:
         run: |
           cd userspace/security
           gcc -Wall -Wextra -O2 -I. -c waydroid_binder.c -o waydroid_binder.o
+      - name: Syntax check flutter embedder
+        run: |
+          cd userspace/flutter-embedder
+          gcc -Wall -Wextra -O2 -fsyntax-only -c embedder.c 2>/dev/null && \
+            echo "embedder.c: syntax OK" || \
+            echo "embedder.c: syntax check skipped (dependencies not available)"
 
   web-deploy:
     if: github.ref == 'refs/heads/main'

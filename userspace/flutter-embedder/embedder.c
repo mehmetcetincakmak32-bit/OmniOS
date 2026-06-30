@@ -324,11 +324,60 @@ static FlutterEngineResult present_callback(void *user_data) {
 static FlutterEngineResult platform_message_callback(
         const FlutterPlatformMessage *message, void *user_data) {
     (void)user_data;
-    if (strcmp(message->channel, "flutter/system") == 0) {
-        fprintf(stdout, "[system] %.*s\n",
-            (int)message->message_size,
-            (const char *)message->message);
+
+    if (strcmp(message->channel, "omnios/system") == 0) {
+        const char *req = (const char *)message->message;
+        size_t len = message->message_size;
+        char method[64] = {0};
+
+        /* Extract method name from JSON: {"method":"...", ...} */
+        const char *m = strstr(req, "\"method\"");
+        if (m) {
+            m = strchr(m + 7, ':');
+            if (m) {
+                m = strchr(m, '"');
+                if (m) {
+                    m++;
+                    const char *end = strchr(m, '"');
+                    if (end && (size_t)(end - m) < sizeof(method) - 1) {
+                        memcpy(method, m, end - m);
+                    }
+                }
+            }
+        }
+
+        char resp[512] = {0};
+
+        if (strcmp(method, "getSystemInfo") == 0) {
+            snprintf(resp, sizeof(resp),
+                "{\"uptime\":%ld,\"apps\":%d,\"memory\":\"128M\"}",
+                time(NULL), 5);
+        } else if (strcmp(method, "getDeviceName") == 0) {
+            snprintf(resp, sizeof(resp), "{\"name\":\"OmniOS\"}");
+        } else if (strcmp(method, "requestCapability") == 0) {
+            snprintf(resp, sizeof(resp), "{\"tokenId\":%d}", 42);
+        } else if (strcmp(method, "sendNotification") == 0) {
+            snprintf(resp, sizeof(resp), "{\"status\":\"ok\"}");
+        } else if (strcmp(method, "setClipboard") == 0) {
+            snprintf(resp, sizeof(resp), "{\"status\":\"ok\"}");
+        } else if (strcmp(method, "getClipboard") == 0) {
+            snprintf(resp, sizeof(resp), "{\"text\":\"\"}");
+        } else {
+            snprintf(resp, sizeof(resp), "{\"error\":\"unknown\"}");
+        }
+
+        FlutterPlatformMessage response = {
+            .struct_size = sizeof(FlutterPlatformMessage),
+            .channel = "omnios/system",
+            .message = (const uint8_t *)resp,
+            .message_size = strlen(resp),
+            .response_handle = NULL,
+        };
+        FlutterEngineSendPlatformMessageResponse(state.engine,
+            message->response_handle, (const uint8_t *)resp, strlen(resp));
+        return kSuccess;
     }
+
     FlutterEngineSendPlatformMessageResponse(state.engine,
         message->response_handle, NULL, 0);
     return kSuccess;

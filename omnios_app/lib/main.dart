@@ -5,8 +5,11 @@ import 'widgets/nav_bar.dart';
 import 'screens/normal_screen.dart';
 import 'screens/flow_screen.dart';
 import 'screens/detail_screen.dart';
+import 'services/platform_bridge.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  PlatformBridge().initialize();
   runApp(const OmniOSApp());
 }
 
