@@ -143,6 +143,28 @@ c-build:
           cd core/security
           ./test_seccomp && echo "Security profile test OK"
 
+  capability-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build capability token IPC library
+        run: |
+          cd userspace/security
+          make lib
+      - name: Build capability daemon
+        run: |
+          cd userspace/security
+          make daemon
+      - name: Build and run capability tests
+        run: |
+          cd userspace/security
+          make test
+          ./test_capability
+      - name: Build Waydroid binder layer
+        run: |
+          cd userspace/security
+          gcc -Wall -Wextra -O2 -I. -c waydroid_binder.c -o waydroid_binder.o
+
   web-deploy:
     if: github.ref == 'refs/heads/main'
     needs: [python-tests]
